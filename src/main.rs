@@ -1,11 +1,20 @@
 use rand::prelude::*;
 use std::{
     error, fmt,
+    fmt::Write,
     num::{NonZeroU8, ParseIntError},
 };
 
 //
-// roll sets of dice with dice notation and output rolls to a text file
+// dice roller
+// takes space-seperated lines of dice notation and performs the requested rolls
+// recieves input from stdin or from a file, outputs to stdout
+// example usage:
+// input: "1d6 2d4 3d10"
+// output:
+// 1d6: 3
+// 2d4: 1 1
+// 3d10: 9 3 3
 //
 
 struct DiceStruct {
@@ -169,6 +178,20 @@ fn roll_parser(dstr: &str) -> Result<DiceRoll, DiceParseError> {
     })
 }
 
+fn fmt_roll(rvec: &Vec<u8>) -> Result<String, fmt::Error> {
+    let mut rollstr = String::new();
+    let mut peekvec = rvec.iter().peekable();
+
+    while let Some(num) = peekvec.next() {
+        write!(&mut rollstr, "{num}")?;
+        if peekvec.peek().is_some() {
+            write!(&mut rollstr, " ")?;
+        }
+    }
+
+    Ok(rollstr)
+}
+
 fn main() {
     let instr = String::from("1x6 0d4 1d6 1d4 3d6 2d20 -2d9 9d6 20d20");
     let mut rng = rand::rng();
@@ -187,6 +210,11 @@ fn main() {
     }
 
     for roll in dice_parsed {
-        println!("{}{}: {:?}", roll.num_rolls, roll.dietype, roll.results);
+        println!(
+            "{}{}: {}",
+            roll.num_rolls,
+            roll.dietype,
+            fmt_roll(&roll.results).unwrap()
+        );
     }
 }
