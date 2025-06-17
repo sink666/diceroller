@@ -170,8 +170,7 @@ fn roll_parser(dstr: &str) -> Result<DiceRoll, DiceParseError> {
 }
 
 fn main() {
-    let instr = String::from("1x6 0d4 9d6 20d20");
-    // let instr = String::from("1d6 1d4 3d6 2d20");
+    let instr = String::from("1x6 0d4 1d6 1d4 3d6 2d20 -2d9 9d6 20d20");
     let mut rng = rand::rng();
     let roll_list: Vec<&str> = instr.split_whitespace().collect();
     let mut dice_parsed: Vec<DiceRoll> = Vec::new();
