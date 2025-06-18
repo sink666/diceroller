@@ -17,24 +17,6 @@ use std::{
 // 3d10: 9 3 3
 //
 
-struct DiceStruct {
-    d4: [u8; 4],
-    d6: [u8; 6],
-    d8: [u8; 8],
-    d10: [u8; 10],
-    d20: [u8; 20],
-}
-
-const DICE_STRUCT: DiceStruct = DiceStruct {
-    d4: [1, 2, 3, 4],
-    d6: [1, 2, 3, 4, 5, 6],
-    d8: [1, 2, 3, 4, 5, 6, 7, 8],
-    d10: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-    d20: [
-        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
-    ],
-};
-
 #[derive(Debug)]
 enum DiceErrorKind {
     InputSyntax,
@@ -128,11 +110,11 @@ impl DiceRoll {
     fn do_roll<R: Rng>(&mut self, rng: &mut R) {
         for _ in 0..self.num_rolls {
             self.results.push(match self.dietype {
-                DieType::D4 => *DICE_STRUCT.d4.choose(rng).unwrap(),
-                DieType::D6 => *DICE_STRUCT.d6.choose(rng).unwrap(),
-                DieType::D8 => *DICE_STRUCT.d8.choose(rng).unwrap(),
-                DieType::D10 => *DICE_STRUCT.d10.choose(rng).unwrap(),
-                DieType::D20 => *DICE_STRUCT.d20.choose(rng).unwrap(),
+                DieType::D4 => rng.random_range(1..4),
+                DieType::D6 => rng.random_range(1..6),
+                DieType::D8 => rng.random_range(1..8),
+                DieType::D10 => rng.random_range(1..10),
+                DieType::D20 => rng.random_range(1..20),
             });
         }
     }
@@ -209,9 +191,12 @@ fn main() {
         roll.do_roll(&mut rng);
     }
 
-    for roll in dice_parsed {
+    let list_delim = ')';
+    for (index, roll) in dice_parsed.iter().enumerate() {
         println!(
-            "{}{}: {}",
+            "{}{} {}{}: {}",
+            index + 1,
+            list_delim,
             roll.num_rolls,
             roll.dietype,
             fmt_roll(&roll.results).unwrap()
